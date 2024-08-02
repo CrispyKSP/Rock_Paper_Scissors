@@ -20,25 +20,45 @@ def new_user(window, welcome, ask_name, name, enter_button):
 
     RPS(window, name_s, bist)
 
-def old_user(window, welcome, ask_name, name, enter_button):
-    name_s = name.get()
+def retry(window, display, button):
+    display.destroy()
+    button.destroy()
 
-    welcome.destroy()
-    ask_name.destroy()
-    name.destroy()
-    enter_button.destroy()
+    old_user(window)
 
-    file_data_accessing(window, name_s)
-
-def file_data_accessing(window, name):
-
-    global me_data, user_data
+def old_user(window):
 
     fg='#153450'
     bg='#F4D6BC'
     font=('Times New Roman', 13)
 
-    name = name + '.txt'
+    welcome = tk.Label(window, text='Good to have you back', fg=fg, bg=bg, anchor='center', font=font)
+    welcome.grid(row=0, column=7, pady=10, sticky='nsew')
+
+    ask_name = tk.Label(window, text='Please enter your username', fg=fg, bg=bg, anchor='center', font=font)
+    ask_name.grid(row=1, column=7, pady=10, sticky='nsew')
+
+    name = tk.Entry(window, fg='#202625', bg='#faddb6')
+    name.grid(row=2, column=7, pady=10, sticky='nsew')
+
+    enter_button = tk.Button(window, text='Done', command=lambda: file_data_accessing(window, name_s, stuff), fg=fg, bg=bg, anchor='center', font=font)
+    enter_button.grid(row=3, column=8, pady=10, sticky='nsew')
+
+    name_s = name.get()
+    stuff = [welcome,ask_name,name,enter_button]
+
+def file_data_accessing(window, name, stuff):
+
+    global me_data, user_data
+
+    for i in stuff:
+        i.destroy()
+
+    fg='#153450'
+    bg='#F4D6BC'
+    font=('Times New Roman', 13)
+
+    name = name + '.txt' 
     try:
         with open(name, "r") as file:
             lines = file.readlines()
@@ -48,26 +68,29 @@ def file_data_accessing(window, name):
                 me_data = int(me)
                 user_data = int(user)
 
-            display_1 = tk.Label(window, text='From our last game', fg=fg, bg=bg, anchor='center', font=font)
+            display_1 = tk.Label(window, text='From our last game', fg= fg, bg= bg, anchor='center', font=font)
             display_1.grid(row=0, column=7, pady=10, sticky='nsew')
 
-            display_2 = tk.Label(window, text='Your points %s ' % (user_data), fg=fg, bg=bg, anchor='center', font=font)
+            display_2 = tk.Label(window, text='Your points %s ' % (user_data), fg= fg, bg= bg, anchor='center', font=font)
             display_2.grid(row=1, column=7, pady=10, sticky='nsew')
 
-            display_3 = tk.Label(window, text='Your points %s ' % (me_data), fg=fg, bg=bg, anchor='center', font=font)
+            display_3 = tk.Label(window, text='Your points %s ' % (me_data), fg= fg, bg= bg, anchor='center', font=font)
             display_3.grid(row=2, column=7, pady=10, sticky='nsew')
 
-            button = tk.Button(window, text='continue', command=lambda: RPS(window, name, bist), fg=fg, bg=bg, anchor='center', font=font)
+            button = tk.Button(window, text='continue', command=lambda: RPS(window, name, bist), fg= fg, bg= bg, anchor='center', font=font)
             button.grid(row=3, column=8, pady=10, sticky='nsew')
 
-            bist = [ display_1, display_2, display_3, button]
+            bist = [ display_1, display_2, display_3, button]            
 
     except FileNotFoundError:
-        print("File not found")
-        
+        display = tk.Label(window, text='File Not found', fg=fg, bg=bg, anchor='center', font=font)
+        display.grid(row=0, column=7, pady=10, sticky='nsew')
+
+        button = tk.Button(window, text = 'Retry', command=lambda: retry(window, display, button), fg= fg, bg = bg, anchor='center', font=font)
+        button.grid(row=1, column=7, pady=10, sticky='nsew')
+            
     except Exception as e:
         print("error with the file stored data: ", e)
-       
 
 def RPS(window, name, bist):
     
@@ -125,7 +148,6 @@ def RPS(window, name, bist):
 
     disable = [quit_button,option,rock_button,paper_button,scissors_button,me_label,me_1,you_label,you_1,word,word2,word1,word3,result_label,result_label1]
 
-
 def Rock(window, me_1, you_1, word2, word3, result_label ,result_label1):
 
     global me_data, user_data
@@ -136,26 +158,17 @@ def Rock(window, me_1, you_1, word2, word3, result_label ,result_label1):
 
     if choice == 3:
         user_data += 1
-        me_1.config(text=me_data)
-        you_1.config(text=user_data)
-        word3.config(text='Scissors')
-        result_label.config(text='U win')
-        result_label1.config(text='ಠ_ಠ')
+        text = 'Scissors'
+        user_win(text, window, me_1, you_1, word3, result_label, result_label1) 
 
     elif choice == 2:
         me_data += 1
-        me_1.config(text=me_data)
-        you_1.config(text=user_data)
-        word3.config(text='Paper')
-        result_label.config(text='I win')
-        result_label1.config(text='(⌐■_■)')
+        text='Paper'
+        user_lose(text, window, me_1, you_1, word3, result_label, result_label1)
 
     else:
-        me_1.config(text=me_data)
-        you_1.config(text=user_data)
-        word3.config(text='Rock')
-        result_label.config(text='Draw')
-        result_label1.config(text='(〃￣︶￣)人')
+        text = 'Rock'
+        user_draw(text, window, me_1, you_1, word3, result_label, result_label1)
 
     print('rock')
 
@@ -169,26 +182,17 @@ def Paper(window, me_1, you_1, word2, word3, result_label, result_label1):
 
     if choice == 1:
         user_data += 1
-        me_1.config(text=me_data)
-        you_1.config(text=user_data)
-        word3.config(text='Rock')
-        result_label.config(text='U win')
-        result_label1.config(text='ಠ_ಠ')
+        text = 'Rock'
+        user_win(text, window, me_1, you_1, word3, result_label, result_label1) 
 
     elif choice == 3:
         me_data += 1
-        me_1.config(text=me_data)
-        you_1.config(text=user_data)
-        word3.config(text='Scissors')
-        result_label.config(text='I win')
-        result_label1.config(text='(⌐■_■)')
+        text='Scissors'
+        user_lose(text, window, me_1, you_1, word3, result_label, result_label1)
 
     else:
-        me_1.config(text=me_data)
-        you_1.config(text=user_data)
-        word3.config(text='Paper')
-        result_label.config(text='Draw')
-        result_label1.config(text='(〃￣︶￣)人')
+        text = 'Paper'
+        user_draw(text, window, me_1, you_1, word3, result_label, result_label1)
 
     print("paper")
 
@@ -202,28 +206,43 @@ def Scissors(window, me_1, you_1, word2, word3, result_label, result_label1):
 
     if choice == 2:
         user_data += 1
-        me_1.config(text=me_data)
-        you_1.config(text=user_data)
-        word3.config(text='Paper')
-        result_label.config(text='U win')
-        result_label1.config(text='ಠ_ಠ')
+        text = 'Paper'
+        user_win(text, window, me_1, you_1, word3, result_label, result_label1)       
 
     elif choice == 1:
         me_data += 1
-        me_1.config(text=me_data)
-        you_1.config(text=user_data)
-        word3.config(text='Rock')
-        result_label.config(text='I win')
-        result_label1.config(text='(⌐■_■)')
+        text = 'Rock'
+        user_lose(text, window, me_1, you_1, word3, result_label, result_label1)
 
     else:
-        me_1.config(text=me_data)
-        you_1.config(text=user_data)
-        word3.config(text='Scissors')
-        result_label.config(text='Draw')
-        result_label1.config(text='(〃￣︶￣)人')
+        text = 'Scissors'
+        user_draw(text, window, me_1, you_1, word3, result_label, result_label1)
 
     print("scissors")
+
+def user_win(text, window, me_1, you_1, word3, result_label, result_label1):
+
+    me_1.config(text=me_data)
+    you_1.config(text=user_data)
+    word3.config(text=text)
+    result_label.config(text='U win')
+    result_label1.config(text='ಠ_ಠ')
+
+def user_lose(text, window, me_1, you_1, word3, result_label, result_label1):
+
+    me_1.config(text=me_data)
+    you_1.config(text=user_data)
+    word3.config(text=text)
+    result_label.config(text='I win')
+    result_label1.config(text='(⌐■_■)')
+
+def user_draw(text, window, me_1, you_1, word3, result_label, result_label1):
+
+    me_1.config(text=me_data)
+    you_1.config(text=user_data)
+    word3.config(text=text)
+    result_label.config(text='Draw')
+    result_label1.config(text='(〃￣︶￣)人')
 
 def file_data_saving(window, name, disable):
 
@@ -261,21 +280,7 @@ def yes(window, intro, about, yes_button, no_button):
     yes_button.destroy()
     no_button.destroy()
 
-    fg='#153450'
-    bg='#F4D6BC'
-    font=('Times New Roman', 13)
-
-    welcome = tk.Label(window, text='Good to have you back', fg=fg, bg=bg, anchor='center', font=font)
-    welcome.grid(row=0, column=7, pady=10, sticky='nsew')
-
-    ask_name = tk.Label(window, text='Please enter your username', fg=fg, bg=bg, anchor='center', font=font)
-    ask_name.grid(row=1, column=7, pady=10, sticky='nsew')
-
-    name = tk.Entry(window, fg='#202625', bg='#faddb6')
-    name.grid(row=2, column=7, pady=10, sticky='nsew')
-
-    enter_button = tk.Button(window, text='Done', command=lambda: old_user(window,welcome,ask_name,name,enter_button), fg=fg, bg=bg, anchor='center', font=font)
-    enter_button.grid(row=3, column=8, pady=10, sticky='nsew')
+    old_user(window)
 
 def no(window, intro, about, yes_button, no_button):
     intro.destroy()
