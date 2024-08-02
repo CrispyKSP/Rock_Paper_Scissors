@@ -7,6 +7,19 @@ user_data = 0
 def end(window):
     window.destroy()
 
+def new_user(window, welcome, ask_name, name, enter_button):
+    name_1 = name.get()
+    name_s = name_1 + '.txt'
+
+    welcome.destroy()
+    ask_name.destroy()
+    name.destroy()
+    enter_button.destroy()
+
+    bist = []
+
+    RPS(window, name_s, bist)
+
 def old_user(window, welcome, ask_name, name, enter_button):
     name_s = name.get()
 
@@ -15,9 +28,7 @@ def old_user(window, welcome, ask_name, name, enter_button):
     name.destroy()
     enter_button.destroy()
 
-    me_data, user_data = file_data_accessing(window, name_s)
-    return me_data, user_data
-
+    file_data_accessing(window, name_s)
 
 def file_data_accessing(window, name):
 
@@ -46,23 +57,22 @@ def file_data_accessing(window, name):
             display_3 = tk.Label(window, text='Your points %s ' % (me_data), fg=fg, bg=bg, anchor='center', font=font)
             display_3.grid(row=2, column=7, pady=10, sticky='nsew')
 
-            button = tk.Button(window, text='continue', command=lambda: RPS(window, display_1, display_2, display_3, button, name), fg=fg, bg=bg, anchor='center', font=font)
+            button = tk.Button(window, text='continue', command=lambda: RPS(window, name, bist), fg=fg, bg=bg, anchor='center', font=font)
             button.grid(row=3, column=8, pady=10, sticky='nsew')
 
-            return me_data, user_data
+            bist = [ display_1, display_2, display_3, button]
+
     except FileNotFoundError:
         print("File not found")
-        return 0, 0
+        
     except Exception as e:
         print("error with the file stored data: ", e)
-        return 0, 0
+       
 
-
-def RPS(window, display_1, display_2, display_3, button, name):
-    display_1.destroy()
-    display_2.destroy()
-    display_3.destroy()
-    button.destroy()
+def RPS(window, name, bist):
+    
+    for i in bist:
+        i.destroy()
 
     fg='#153450'
     bg='#F4D6BC'
@@ -148,8 +158,6 @@ def Rock(window, me_1, you_1, word2, word3, result_label ,result_label1):
         result_label1.config(text='(〃￣︶￣)人')
 
     print('rock')
-    return me_data,user_data
-
 
 def Paper(window, me_1, you_1, word2, word3, result_label, result_label1):
     
@@ -183,8 +191,6 @@ def Paper(window, me_1, you_1, word2, word3, result_label, result_label1):
         result_label1.config(text='(〃￣︶￣)人')
 
     print("paper")
-    return me_data,user_data
-
 
 def Scissors(window, me_1, you_1, word2, word3, result_label, result_label1):
 
@@ -218,7 +224,6 @@ def Scissors(window, me_1, you_1, word2, word3, result_label, result_label1):
         result_label1.config(text='(〃￣︶￣)人')
 
     print("scissors")
-    return me_data,user_data
 
 def file_data_saving(window, name, disable):
 
@@ -277,7 +282,22 @@ def no(window, intro, about, yes_button, no_button):
     about.destroy()
     yes_button.destroy()
     no_button.destroy()
-    print('no')
+    
+    fg='#153450'
+    bg='#F4D6BC'
+    font=('Times New Roman', 13)
+
+    welcome = tk.Label(window, text='Good to have you', fg=fg, bg=bg, anchor='center', font=font)
+    welcome.grid(row=0, column=7, pady=10, sticky='nsew')
+
+    ask_name = tk.Label(window, text='Please enter the username you would like to use', fg=fg, bg=bg, anchor='center', font=font)
+    ask_name.grid(row=1, column=7, pady=10, sticky='nsew')
+
+    name = tk.Entry(window, fg='#202625', bg='#faddb6')
+    name.grid(row=2, column=7, pady=10, sticky='nsew')
+
+    enter_button = tk.Button(window, text='Done', command=lambda: new_user(window,welcome,ask_name,name,enter_button), fg=fg, bg=bg, anchor='center', font=font)
+    enter_button.grid(row=3, column=8, pady=10, sticky='nsew')
 
 def main():
     fg='#153450'
